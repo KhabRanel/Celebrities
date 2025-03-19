@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <!-- Основной контент (знаменитости) -->
+        <div class="col-md-8">
+            <!-- Блок для знаменитости с днем рождения -->
+            {% if birthday_celebrities %}
+                <div class="mb-4">
+                    <div class="card mb-4">
+                        <h3>🎉 Сегодня день рождения у:</h3>
+                        {% for birthday_celebrity in birthday_celebrities %}
+                            <div class="p-3 bg-light rounded">
+                                <h3><a href="{{ birthday_celebrity.get_absolute_url }}" class="text-decoration-none">{{ birthday_celebrity.name }}</a></h3>
+                                <p><strong>Страна:</strong> {{ birthday_celebrity.country }}</p>
+                                <p><strong>Род деятельности:</strong> {{ birthday_celebrity.cat }}</p>
+                                <p><strong>Дата рождения:</strong> {{ birthday_celebrity.birth_date }}</p>
+                                <p><strong>Краткое описание:</strong> {{ birthday_celebrity.content }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Список всех знаменитостей -->
+            <div id="celebrities-list">
+                {% for celebrity in celebrities %}
+                    <div class="card mb-4">
+                        <div class="mb-4">
+                            <h3><a href="{{ celebrity.get_absolute_url }}" class="text-decoration-none">{{ celebrity.name }}</a></h3>
+                            <p><strong>Страна:</strong> {{ celebrity.country }}</p>
+                            <p><strong>Род деятельности:</strong> {{ celebrity.cat }}</p>
+                            <p><strong>Дата рождения:</strong> {{ celebrity.birth_date }}</p>
+                            <p><strong>Краткое описание:</strong> {{ celebrity.content }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Кнопка "Показать ещё" -->
+            <button id="show-more" class="btn btn-primary mt-3">Показать ещё</button>
+        </div>
+
+        <!-- Боковая панель с категориями -->
+        <div class="col-md-4">
+            <div class="card">
+                <h3>Категории</h3>
+                <ul class="list-unstyled">
+                    <li><a href="{% url 'category' 'kino' %}" class="text-decoration-none">Кино</a></li>
+                    <li><a href="{% url 'category' 'sport' %}" class="text-decoration-none">Спорт</a></li>
+                    <li><a href="{% url 'category' 'muzyka' %}" class="text-decoration-none">Музыка</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript для динамической загрузки -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const showMoreButton = document.getElementById('show-more');
+        const celebritiesList = document.getElementById('celebrities-list');
+        const allCelebrities = {{ all_celebrities|safe }};  // Все знаменитости из контекста
+
+        let visibleCount = 4;  // Количество изначально видимых записей
+
+        showMoreButton.addEventListener('click', function() {
+            // Показываем следующие 4 записи
+            for (let i = visibleCount; i < visibleCount + 4 && i < allCelebrities.length; i++) {
+                const celebrity = allCelebrities[i];
+                const celebrityHtml = `
+                    <div class="card mb-4">
+                        <div class="mb-4">
+                            <h3><a href="${celebrity.slug}" class="text-decoration-none">${celebrity.name}</a></h3>
+                            <p><strong>Страна:</strong> ${celebrity.country}</p>
+                            <p><strong>Род деятельности:</strong> ${celebrity.cat}</p>  <!-- Используем название категории -->
+                            <p><strong>Дата рождения:</strong> ${celebrity.birth_date}</p>
+                            <p><strong>Краткое описание:</strong> ${celebrity.content}</p>
+                        </div>
+                    </div>
+                `;
+                celebritiesList.insertAdjacentHTML('beforeend', celebrityHtml);
+            }
+
+            visibleCount += 4;
+
+            // Скрываем кнопку, если все записи показаны
+            if (visibleCount >= allCelebrities.length) {
+                showMoreButton.style.display = 'none';
+            }
+        });
+    });
+</script>
+{% endblock %}

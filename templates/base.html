@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой сайт</title>
+    <!-- Подключение Bootstrap для стилей -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Собственные стили */
+        .navbar {
+            background-color: #f8f9fa;
+            padding: 20px 180px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .navbar a {
+            color: #333;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 18px;
+        }
+        .navbar a:hover {
+            color: #007bff;
+        }
+        .navbar a:last-child {
+            margin-left: 650px;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+         .card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #fafafc;
+        }
+        .card h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        .card p {
+            margin: 5px 0;
+            color: #555;
+        }
+        .card p strong {
+            color: #000;
+        }
+        .bg-light {
+            background-color: #f8f9fa !important; /* Легкий фон для блоков */
+        }
+        .rounded {
+            border-radius: 8px; /* Закругленные углы */
+        }
+        .text-decoration-none {
+            text-decoration: none; /* Убираем подчеркивание у ссылок */
+        }
+        /* Стили для подвала */
+        footer {
+            background-color: #123;
+            color: #fff;
+            padding: 5px 0;
+            text-align: center;
+            margin-top: auto; /* Прижимаем подвал к низу */
+        }
+        footer a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        footer a:hover {
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <!-- Шапка сайта -->
+    <header class="navbar">
+        <nav>
+            <!-- Кнопки с ссылками -->
+            <a href="{% url 'home' %}">Главная</a>
+            <a href="{% url 'about' %}">О сайте</a>
+            <a href="{% url 'addpage' %}">Добавить знаменитость</a>
+            <a href="{% url 'login' %}">Вход</a>
+        </nav>
+    </header>
+
+    <!-- Основное содержимое страницы -->
+    <main class="container mt-4">
+        {% block content %}
+        <!-- Сюда будет подставляться контент других страниц -->
+        {% endblock %}
+    </main>
+
+    <!-- Подвал сайта -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Мой сайт. Все права защищены.</p>
+            <p>
+                <a href="#">О нас</a> |
+                <a href="#">Контакты</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Подключение Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

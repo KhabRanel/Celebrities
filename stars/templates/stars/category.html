@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>{{title}}</h1>
+{% for celebrity in person %}
+                <div class="card mb-4">
+                    <div class="mb-4">
+                        <h3><a href="{% url 'person' celebrity.slug %}" class="text-decoration-none">{{ celebrity.name }}</a></h3>
+                        <p><strong>Страна:</strong> {{ celebrity.country }}</p>
+                        <p><strong>Род деятельности:</strong> {{ celebrity.cat }}</p>
+                        <p><strong>Дата рождения:</strong> {{ celebrity.birth_date }}</p>
+                        <p><strong>Краткое описание:</strong> {{ celebrity.content }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+{% endblock %}
