@@ -9,12 +9,16 @@ class AddPostForm(forms.ModelForm):
                                      label="Категории")
 
         model = Stars
-        fields = ['name', 'country', 'birth_date', 'cat', 'full_content', 'slug', 'is_published']
-        labels = {'slug': 'URL'}
+        fields = ['name', 'country', 'birth_date', 'cat', 'full_content',
+                  'is_published', 'photo']
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-input'}),
-            'birth_date': forms.SelectDateWidget(years=range(1900, 2026)),
-            'is_published': forms.CheckboxInput(),
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Леонардо Дикаприо'}),
+            'birth_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'is_published': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'photo': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'cat': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Кино'}),
+            'country': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'США'}),
+            'full_content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Введите биографию'})
         }
 
 

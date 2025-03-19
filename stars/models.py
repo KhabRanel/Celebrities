@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from slugify import slugify
 
 
 class PublishedModel(models.Manager):
@@ -18,6 +19,8 @@ class Stars(models.Model):
     birth_date = models.DateField(blank=True, verbose_name='Дата рождения')
     content = models.TextField(blank=True, verbose_name='Краткая биография')
     full_content = models.TextField(blank=True, verbose_name='Биография')
+    photo = models.ImageField(upload_to="photos/%Y/%m/%d/", default=None, blank=True,
+                              null=True, verbose_name="Фото")
     time_create = models.DateTimeField(auto_now_add=True, verbose_name='Время создания')
     time_update = models.DateTimeField(auto_now=True, verbose_name='Время изменения')
     is_published = models.BooleanField(choices=tuple(map(lambda x: (bool(x[0]), x[1]), Status.choices)),
@@ -30,7 +33,15 @@ class Stars(models.Model):
     def save(self, *args, **kwargs):
         if not self.content:
             self.content = self.__cut_content()
+        if not self.slug:
+            self.slug = slugify(self.name)
+            original_slug = self.slug
+            counter = 1
+            while Stars.objects.filter(slug=self.slug).exists():
+                self.slug = f"{original_slug}-{counter}"
+                counter += 1
         super().save(*args, **kwargs)
+
 
     def __cut_content(self):
         text = ''

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <h1 style="margin-bottom: 50px;">Добавление знаменитости</h1>
-<form action="" method="post">
+<form action="" method="post" enctype="multipart/form-data">
     {% csrf_token %}
 
     <div class="row">
@@ -9,37 +9,37 @@
         <div class="col-md-6">
             <div class="mb-3 row">
                 <label for="{{ form.name.id_for_label }}" class="col-sm-3 col-form-label text-end">{{ form.name.label }}</label>
-                <div class="col-sm-9">
+                <div class="col-sm-7">
                     {{ form.name }}
                 </div>
             </div>
             <div class="mb-3 row">
                 <label for="{{ form.birth_date.id_for_label }}" class="col-sm-3 col-form-label text-end">{{ form.birth_date.label }}</label>
-                <div class="col-sm-9">
+                <div class="col-sm-7">
                     {{ form.birth_date }}
                 </div>
             </div>
             <div class="mb-3 row">
                 <label for="{{ form.cat.id_for_label }}" class="col-sm-3 col-form-label text-end">{{ form.cat.label }}</label>
-                <div class="col-sm-9">
+                <div class="col-sm-7">
                     {{ form.cat }}
                 </div>
             </div>
             <div class="mb-3 row">
                 <label for="{{ form.country.id_for_label }}" class="col-sm-3 col-form-label text-end">{{ form.country.label }}</label>
-                <div class="col-sm-9">
+                <div class="col-sm-7">
                     {{ form.country }}
                 </div>
             </div>
             <div class="mb-3 row">
-                <label for="{{ form.slug.id_for_label }}" class="col-sm-3 col-form-label text-end">{{ form.slug.label }}</label>
-                <div class="col-sm-9">
-                    {{ form.slug }}
+                <label for="{{ form.photo.id_for_label }}" class="col-sm-3 col-form-label text-end">{{ form.photo.label }}</label>
+                <div class="col-sm-7">
+                    {{ form.photo }}
                 </div>
             </div>
             <div class="mb-3 row">
                 <label for="{{ form.is_published.id_for_label }}" class="col-sm-3 col-form-label text-end">{{ form.is_published.label }}</label>
-                <div class="col-sm-9">
+                <div class="col-sm-7">
                     {{ form.is_published }}
                 </div>
             </div>
