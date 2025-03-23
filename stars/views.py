@@ -1,9 +1,14 @@
 import json
 from django.core.serializers import serialize
+from django.urls import reverse_lazy
 from django.shortcuts import render, get_object_or_404, redirect
+from django.views import View
+from django.views.generic import ListView, DetailView
+from django.views.generic.edit import CreateView
 from stars.models import Stars, Category
 from .forms import AddPostForm
-from django.http import (HttpResponse, HttpResponseNotFound, HttpResponseServerError, HttpResponseForbidden, HttpResponseBadRequest)
+from django.http import (HttpResponse, HttpResponseNotFound, HttpResponseServerError,
+                         HttpResponseForbidden, HttpResponseBadRequest)
 from datetime import date
 
 MONTHS = {
@@ -21,75 +26,89 @@ MONTHS = {
         12: "декабря",
     }
 
-def index(request):
 
-    today = date.today()
+class StarsHome(ListView):
+    template_name = 'stars/index.html'
 
-    birthday_celebrities = Stars.published.filter(
-        birth_date__month=today.month,
-        birth_date__day=today.day)
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['all_celebrities'] = self.__get_all_celebrities()
+        context['celebrities'] = Stars.published.all()[:4]
+        context['birthday_celebrities'] = self.__get_birthday_celebrities()
+        return context
 
-    celebrities = Stars.published.all()[:4]
+    @staticmethod
+    def get_queryset():
+        return Stars.published.all().select_related('cat')
 
-    all_celebrities = []
-    for star in Stars.published.all():
-        day = str(star.birth_date.day)
-        month = MONTHS[star.birth_date.month]
-        formatted_date = f"{day} {month} {star.birth_date.year} г."
-        all_celebrities.append({
-            'name': star.name,
-            'slug': star.get_absolute_url(),
-            'country': star.country,
-            'birth_date': formatted_date,
-            'content': star.content,
-            'cat': star.cat.name,
-        })
+    @staticmethod
+    def __get_all_celebrities():
+        all_celebrities = []
+        for star in Stars.published.all():
+            day = str(star.birth_date.day)
+            month = MONTHS[star.birth_date.month]
+            formatted_date = f"{day} {month} {star.birth_date.year} г."
+            all_celebrities.append({
+                'name': star.name,
+                'slug': star.get_absolute_url(),
+                'country': star.country,
+                'birth_date': formatted_date,
+                'content': star.content,
+                'cat': star.cat.name,
+            })
+        return all_celebrities
 
-    data = {
-        'celebrities': celebrities,
-        'birthday_celebrities': birthday_celebrities,
-        'all_celebrities': all_celebrities
-    }
-    return render(request, 'stars/index.html', context=data)
+    @staticmethod
+    def __get_birthday_celebrities():
+        today = date.today()
+        birthday_celebrities = Stars.published.filter(
+            birth_date__month=today.month,
+            birth_date__day=today.day)
+        return birthday_celebrities
+
+
+class AddPage(CreateView):
+    form_class = AddPostForm
+    template_name = 'stars/addpage.html'
+    success_url = reverse_lazy('home')
+
+
+class ShowPerson(DetailView):
+    model = Stars
+    template_name = 'stars/person.html'
+    context_object_name = 'post'
+    slug_url_kwarg = 'person_slug'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = context['post'].name
+        return context
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Stars.published, slug=self.kwargs[self.slug_url_kwarg])
+
+
+class StarsCategory(ListView):
+    template_name = 'stars/category.html'
+    context_object_name = 'person'
+    allow_empty = False
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        category = context['person'][0].cat
+        context['title'] = f'Знаменитости из сферы {category.name}'
+        return context
+
+    def get_queryset(self):
+        return Stars.published.filter(cat__slug=self.kwargs['cat_slug']).select_related('cat')
+
 
 def about(request):
     return render(request, 'stars/about.html')
 
-def addpage(request):
-    if request.method == 'POST':
-        form = AddPostForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('home')
-    else:
-        form = AddPostForm()
-
-    data = {
-        'form': form
-    }
-    return render(request, 'stars/addpage.html', context=data)
-
 def login(request):
     return render(request, 'stars/login.html')
 
-def show_person(request, person_slug):
-    person = get_object_or_404(Stars, slug=person_slug)
-    data = {
-        'title': person.name,
-        'post': person,
-        'cat_selected': 1,
-    }
-    return render(request, 'stars/person.html', context=data)
-
-def show_categories(request, cat_slug):
-    category = get_object_or_404(Category, slug=cat_slug)
-    person = Stars.published.filter(cat_id=category.pk)
-    data = {
-        'category': category,
-        'person': person,
-        'title': f'Знаменитости из сферы {category.name}'
-    }
-    return render(request, 'stars/category.html', context=data)
 
 # Обработка  ошибок
 
